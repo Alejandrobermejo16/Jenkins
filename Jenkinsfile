@@ -1,6 +1,8 @@
 pipeline {
     agent any
-
+    tools {
+        nodejs 'nodejs-18' // Asegúrate de que este nombre coincida con el configurado en la configuración del sistema
+    }
     stages {
         stage('Declarative: Checkout SCM') {
             steps {
