@@ -1,46 +1,51 @@
 pipeline {
     agent any
+
     tools {
         nodejs 'nodejs-18' // Asegúrate de que este nombre coincida con el configurado en la configuración del sistema
     }
+
     stages {
-        stage('Declarative: Checkout SCM') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'npm test'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
-                // Asegúrate de estar en el directorio correcto si hay subcarpetas
-                sh 'npm install'
+                script {
+                    sh 'npm run build'
+                }
             }
         }
+    }
 
-        stage('Paso 1') {
-            steps {
-                echo 'Este es el paso 1'
-                cat package.json
-            }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
         }
-
-        stage('Test') {
-            steps {
-                echo 'Este es el paso de pruebas'
-            }
+        success {
+            echo 'Build and tests succeeded.'
         }
-
-        stage('Deploy') {
-            steps {
-                echo 'Este es el paso de despliegue'
-            }
-        }
-
-        stage('Declarative: Post Actions') {
-            steps {
-                echo 'Pipeline salga bien o salga mal'
-                echo 'Pipeline ha fallado!'
-            }
+        failure {
+            echo 'Build or tests failed.'
         }
     }
 }
