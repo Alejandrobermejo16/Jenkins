@@ -1,50 +1,33 @@
 pipeline {
     agent any
-
-    environment {
-        // Asegúrate de que 'nodejs-18' es el nombre correcto que configuraste en Jenkins
-        NODEJS_HOME = tool name: 'nodejs-18', type: 'NodeJS'
-        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
+    tools {
+        nodejs 'nodejs-18'  // Cambia 'nodejs-18' por el nombre correcto de tu instalación de NodeJS
     }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
             }
         }
-
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
-
         stage('Run Tests') {
             steps {
-                script {
-                    sh 'npm test'
-                }
+                sh 'npm test'
             }
         }
-
         stage('Build') {
             steps {
-                script {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
             }
         }
     }
-
     post {
         always {
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-        }
-        success {
-            echo 'Build and tests succeeded.'
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true  // Ajusta esta ruta si es necesario
         }
         failure {
             echo 'Build or tests failed.'
