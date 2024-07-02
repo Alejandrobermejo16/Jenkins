@@ -1,7 +1,11 @@
 pipeline {
     agent any
 
-   
+    environment {
+        // Asegúrate de que 'nodejs-18' es el nombre correcto que configuraste en Jenkins
+        NODEJS_HOME = tool name: 'nodejs-18', type: 'NodeJS'
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
+    }
 
     stages {
         stage('Checkout') {
