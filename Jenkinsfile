@@ -1,6 +1,7 @@
 pipeline {
-    agent any
-
+    agent {
+        docker { image 'node:18' }  // Usa una imagen oficial de Node.js
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -14,24 +15,42 @@ pipeline {
         }
         stage('Instalar Dependencias') {
             steps {
-                script {
-                    sh 'npm install'  // Si usas Node.js, por ejemplo
-                }
+                sh 'npm install'
             }
         }
         stage('Ejecutar Pruebas') {
             steps {
-                script {
-                    sh 'npm test'  // Comando para ejecutar pruebas unitarias
-                }
+                sh 'npm test'
             }
         }
         stage('Construir Artefacto') {
             steps {
-                script {
-                    sh 'npm run build'  // Comando para construir artefacto
-                }
+                sh 'npm run build'
             }
+        }
+        stage('Desplegar a Prueba') {
+            steps {
+                sh 'scp -r ./build usuario@servidor:/ruta/de/despliegue'
+            }
+        }
+        stage('Notificación') {
+            steps {
+                slackSend(channel: '#general', message: "El Pipeline ha terminado exitosamente!")
+                mail to: 'usuario@example.com',
+                     subject: "Pipeline terminado",
+                     body: "El Pipeline ha terminado exitosamente!"
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline completado'
+        }
+        success {
+            echo '¡Éxito!'
+        }
+        failure {
+            echo 'Fallido :('
         }
     }
 }
