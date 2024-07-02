@@ -18,6 +18,7 @@ pipeline {
         stage('Paso 1') {
             steps {
                 echo 'Este es el paso 1'
+                cat package.json
             }
         }
 
