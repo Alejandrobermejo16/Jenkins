@@ -1,30 +1,12 @@
+Jenkinsfile (canalización declarativa)
+/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent {
-        docker { image 'node:18' }  // Usa la imagen de Node.js 18
-    }
+    agent { docker { image 'maven:3.9.8-eclipse-temurin-21-alpine' } }
     stages {
-        stage('Instalar Dependencias') {
+        stage('build') {
             steps {
-                sh 'npm install'  // Instala las dependencias de Node.js
+                sh 'mvn --version'
             }
-        }
-        stage('Ejecutar Pruebas') {
-            steps {
-                sh 'npm test'  // Ejecuta pruebas definidas en package.json
-            }
-        }
-        stage('Construir Artefacto') {
-            steps {
-                sh 'npm run build'  // Construye el artefacto usando un script de npm
-            }
-        }
-    }
-    post {
-        always {
-            echo 'Pipeline completado'
-        }
-        failure {
-            echo 'Fallido :('
         }
     }
 }
