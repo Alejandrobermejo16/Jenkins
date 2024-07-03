@@ -1,51 +1,54 @@
 pipeline {
-    agent any
+    agent any  // Define el tipo de agente que Jenkins usará para ejecutar los builds
 
     tools {
-        nodejs "node"  // Si necesitas usar una versión específica de Node.js, asegúrate de que está correctamente configurada en Jenkins
+        nodejs "node"  // Asegúrate de que Node.js está instalado y configurado en Jenkins
     }
 
     parameters {
-        string(name: 'container_name', defaultValue: 'pagina_web', description: 'Nombre contenedor docker')
-        string(name: 'img_name', defaultValue: 'pagina_img', description: 'Nombre de la imagen docker')
-        string(name: 'tag_image', defaultValue: 'lts', description: 'Tag de la imagen de la pagina')
+        string(name: 'container_name', defaultValue: 'pagina_web', description: 'Nombre del contenedor Docker')
+        string(name: 'img_name', defaultValue: 'pagina_img', description: 'Nombre de la imagen Docker')
+        string(name: 'tag_image', defaultValue: 'lts', description: 'Tag de la imagen de la página')
         string(name: 'container_port', defaultValue: '80', description: 'Puerto que usa el contenedor')
     }
 
     stages {
-        stage('install') {
+        stage('Install') {
             steps {
-                git branch: 'master', url: 'https://github.com/Alejandrobermejo16/Jenkins.git'  // Extrae los cambios del repositorio
+                git branch: 'master', url: 'https://github.com/Alejandrobermejo16/Jenkins.git'  // Clona el repositorio
                 dir('Jenkins') {
-                    // Instalar dependencias de npm
-                    sh 'npm install'
+                    sh 'npm install'  // Instala dependencias
                 }
             }
         }
-    }
-    stage('Test') {
+
+        stage('Test') {
             steps {
                 dir('Jenkins') {
                     sh 'npm test'  // Ejecuta las pruebas unitarias
                 }
             }
         }
+    }
 
     post {
         always {
-    echo 'Cleaning up after the build'
-    cleanWs()  // Limpia el workspace
-}
+            echo 'Cleaning up after the build'
+            cleanWs()  // Limpia el workspace
+        }
 
         success {
-    echo 'Build was successful!'
-    // Puedes enviar un mensaje de éxito a un canal de Slack, correo electrónico, etc.
-}
+            echo 'Build was successful!'
+            emailext (
+                to: 'team@example.com',
+                subject: 'Build Success',
+                body: 'The build was successful!'
+            )  // Envía un correo electrónico de éxito
+        }
 
-       failure {
-    echo 'Build failed!'
-    // Puedes enviar un mensaje de error a un canal de Slack, correo electrónico, etc.
-}
-
+        failure {
+            echo 'Build failed!'
+            slackSend channel: '#builds', message: 'Build failed!'  // Envía un mensaje de error a un canal de Slack
+        }
     }
 }
