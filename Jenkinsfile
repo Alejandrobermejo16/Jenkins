@@ -23,6 +23,13 @@ pipeline {
             }
         }
     }
+    stage('Test') {
+            steps {
+                dir('Jenkins') {
+                    sh 'npm test'  // Ejecuta las pruebas unitarias
+                }
+            }
+        }
 
     post {
         always {
