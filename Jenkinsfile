@@ -39,16 +39,10 @@ pipeline {
 
         success {
             echo 'Build was successful!'
-            emailext (
-                to: 'team@example.com',
-                subject: 'Build Success',
-                body: 'The build was successful!'
-            )  // Envía un correo electrónico de éxito
         }
 
         failure {
             echo 'Build failed!'
-            slackSend channel: '#builds', message: 'Build failed!'  // Envía un mensaje de error a un canal de Slack
         }
     }
 }
