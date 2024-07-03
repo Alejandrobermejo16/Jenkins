@@ -26,13 +26,19 @@ pipeline {
 
     post {
         always {
-            // Acciones a realizar siempre, por ejemplo, limpieza
-        }
+    echo 'Cleaning up after the build'
+    cleanWs()  // Limpia el workspace
+}
+
         success {
-            // Acciones a realizar si la build es exitosa
-        }
-        failure {
-            // Acciones a realizar si la build falla
-        }
+    echo 'Build was successful!'
+    // Puedes enviar un mensaje de éxito a un canal de Slack, correo electrónico, etc.
+}
+
+       failure {
+    echo 'Build failed!'
+    // Puedes enviar un mensaje de error a un canal de Slack, correo electrónico, etc.
+}
+
     }
 }
